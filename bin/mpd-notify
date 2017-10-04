@@ -1,0 +1,88 @@
+#! /usr/bin/env perl6
+
+use v6.c;
+
+use Config;
+use Desktop::Notify;
+use MPD::Client;
+use MPD::Client::Status;
+
+sub MAIN
+{
+	# Initialize configuration
+	my Config $config .= new;
+
+	$config.read: %(
+		mpd => %(
+			host => "localhost",
+			port => 6600,
+		),
+		notifier => %(
+			name => "MPD",
+			timeout => 5,
+		),
+		icons => %(
+			# TODO: Change these to generic defaults and load custom icons from config file
+			play => "/usr/share/icons/gnome/16x16/actions/media-playback-start.png",
+			pause => "/usr/share/icons/gnome/16x16/actions/media-playback-pause.png",
+			stop => "/usr/share/icons/gnome/16x16/actions/media-playback-stop.png",
+		)
+	);
+
+	# Initialize the notifier
+	my Desktop::Notify $notifier .= new(app-name => $config.get("notifier.name"));
+
+	# Connect to MPD
+	my IO::Socket::INET $mpd = mpd-connect(
+		:host($config.get("mpd.host"))
+		:port($config.get("mpd.port"))
+	);
+
+	# TODO Display current track after startup
+
+	# Start event loop
+	loop {
+		# Wait for new events
+		my $event = mpd-idle($mpd);
+
+		my Str $name = "";
+		my Str $body = "";
+		my Str $icon = "";
+
+		# Handle events
+		given $event<changed> {
+			when "player" {
+				my %track = mpd-currentsong($mpd);
+
+				proceed if %track eq %();
+
+				given mpd-status("state", $mpd) {
+					when "play" {
+						$name = "Now playing";
+						$icon = $config.get("icons.play");
+						$body = "{%track<Artist>} - {%track<Title>}";
+					}
+					when "pause" {
+						$name = "Playback paused";
+						$icon = $config.get("icons.pause");
+						$body = "{%track<Artist>} - {%track<Title>}";
+					}
+					when "stop" {
+						$name = "Playback stopped";
+						$icon = $config.get("icons.stop");
+					}
+				}
+			}
+			default { .say }
+		}
+
+		next if $name eq "";
+
+		# Create new notification
+		my $notification = $notifier.new-notification($name, $body, $icon);
+
+		# Show notification
+		$notifier.set-timeout($notification, $config.get("notifier.timeout"));
+		$notifier.show($notification);
+	}
+}

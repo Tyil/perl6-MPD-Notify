@@ -1,0 +1,25 @@
+{
+    "perl": "6",
+    "name": "MPD::Notify",
+    "version": "0.0.1",
+    "auth": "github:tyil",
+    "description": "Show MPD notifications",
+    "license": "GPL-3.0",
+    "depends": [
+        "Desktop::Notify",
+        "MPD::Client",
+        "Config"
+    ],
+    "provides": {
+        "mpd-notify": "bin/mpd-notify"
+    },
+    "authors": [
+        "Patrick Spek <p.spek@tyil.work>"
+    ],
+    "tags": [
+    ],
+    "test-depends": [
+        "Test::META"
+    ],
+    "source-url": "https://github.com/tyil/perl6-MPD-Notify.git"
+}
