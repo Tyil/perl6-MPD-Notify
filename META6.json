@@ -6,9 +6,10 @@
     "description": "Show MPD notifications",
     "license": "GPL-3.0",
     "depends": [
+        "Config",
         "Desktop::Notify",
-        "MPD::Client",
-        "Config"
+        "HTML::Escape",
+        "MPD::Client"
     ],
     "provides": {
         "mpd-notify": "bin/mpd-notify"

@@ -4,6 +4,7 @@ use v6.c;
 
 use Config;
 use Desktop::Notify;
+use HTML::Escape;
 use MPD::Client;
 use MPD::Client::Status;
 
@@ -77,6 +78,10 @@ sub MAIN
 		}
 
 		next if $name eq "";
+
+		# Sanitize input
+		$name = escape-html($name);
+		$body = escape-html($body);
 
 		# Create new notification
 		my $notification = $notifier.new-notification($name, $body, $icon);
