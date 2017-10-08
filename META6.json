@@ -1,7 +1,7 @@
 {
     "perl": "6",
-    "name": "MPD::Notify",
-    "version": "0.0.1",
+    "name": "App::MPD::Notify",
+    "version": "0.1.0",
     "auth": "github:tyil",
     "description": "Show MPD notifications",
     "license": "GPL-3.0",
